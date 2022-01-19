@@ -24,12 +24,9 @@ int main(void)
 	// connect socket
 	result = connect(sockfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr));
     if (result == -1){
-        for (i = 3; i != 0; i--){
+        while (result != 0){
             sleep(5);
             result = connect(sockfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr));
-            if (result != -1){
-                break;
-            }
         }
     }
 
