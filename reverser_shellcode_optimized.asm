@@ -3,8 +3,8 @@ global      _start
 
 section .text
 
-    IP_ADDRESS  equ     -ip_address-
-    PORT        equ     -port-
+    IP_ADDRESS  equ     -ip_address-    ; 0xfeffff80
+    PORT        equ     -port-          ; 0x901F
     AF_INET     equ     0x2
     SOCK_STREAM equ     0x1
 
