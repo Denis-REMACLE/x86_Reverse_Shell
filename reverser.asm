@@ -63,7 +63,7 @@ retry:
     mov         al, 162
     mov         ebx, timeval
     xor         ecx, ecx
-    int         0x80
+    int         80h
 ; Then connect to ip and port
     xor         ecx, ecx
     mul         ecx
