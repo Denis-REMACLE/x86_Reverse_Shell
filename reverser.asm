@@ -13,8 +13,8 @@ section .text
         tv_sec  dd      0x05
         tv_usec dd      1
 
-    IP_ADDRESS  equ     0xfeffff80
-    PORT        equ     0x901F
+    IP_ADDRESS  equ     0xfeffff80      ; 0xfeffff80
+    PORT        equ     0x901F          ; 0x901F
     AF_INET     equ     0x2
     SOCK_STREAM equ     0x1
 
