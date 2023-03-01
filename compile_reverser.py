@@ -31,7 +31,7 @@ def port_treatment(port):
     port_part_two = port[0:2]
     port_treated += port_part_one + port_part_two
 
-    return port
+    return port_treated
 
 #def copy_and_modify(version, name, ip, port):
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     # Then initialize the arguments
     parser.add_argument("--shellcode-it", "-s", default=False, action="store_true")
-    parser.add_argument("--version", "-v", default="reverser.asm", type=str)
+    parser.add_argument("--file", "-f", type=str)
     parser.add_argument("--ip-address", "-i", default="127.0.0.1", type=str)
     parser.add_argument("--port", "-p", default="8080", type=str)
     parser.add_argument("--name", "-n", default="reverser_default", type=str)
@@ -52,5 +52,16 @@ if __name__ == "__main__":
     # and then parse it
     args = parser.parse_args()
 
+    if not args.file:
+        print("You need to set a file to treat")
+        exit(0)
+    else:
+        with open(args.file, 'r') as f:
+            code = f.read()
+
+
     ip = ip_treatment(args.ip_address)
     port = port_treatment(args.port)
+    code = code.replace("-ip_address-", ip)
+    code = code.replace("-port-", port)
+    print(code)
