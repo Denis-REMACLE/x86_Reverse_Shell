@@ -66,5 +66,5 @@ loop:
 
     xor         rbx, rbx
     xor         rax, rax
-    mov         al, 0x1
+    mov         al, 0x3c
     syscall

